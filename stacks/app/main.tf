@@ -1,6 +1,5 @@
-# Applaget for ALLE tjenestene: en VM eller en web app per tjeneste, koblet til
-# subnettet som network-stacken har laget for den.
-
+# PR 2: migrer VM og webapp ut av gammel app.tfstate.
+# Lesbare legacy outputs beholdes så rapporteringen i kjor.sh er som før.
 data "terraform_remote_state" "network" {
   backend = "azurerm"
   config = {
@@ -14,37 +13,24 @@ data "terraform_remote_state" "network" {
 
 locals {
   network = data.terraform_remote_state.network.outputs
+}
 
-  tags = {
-    eier  = var.kortnavn
-    miljo = var.miljo
-    kurs  = "dcst3005-oblig2"
+data "azurerm_public_ip" "vm" {
+  for_each            = { for navn, runtime in var.tjenester : navn => runtime if runtime == "vm" }
+  name                = "pip-${each.key}"
+  resource_group_name = local.network.resource_group_name
+}
+
+removed {
+  from = module.vm
+  lifecycle {
+    destroy = false
   }
 }
 
-module "vm" {
-  source   = "../../modules/vm"
-  for_each = { for navn, runtime in var.tjenester : navn => runtime if runtime == "vm" }
-
-  service             = each.key
-  resource_group_name = local.network.resource_group_name
-  location            = var.location
-  subnet_id           = local.network.subnet_ids[each.key]
-  size                = var.vm_size
-  ssh_public_key      = var.ssh_public_key
-  tags                = local.tags
-}
-
-module "webapp" {
-  source   = "../../modules/webapp"
-  for_each = { for navn, runtime in var.tjenester : navn => runtime if runtime == "webapp" }
-
-  service             = each.key
-  kortnavn            = var.kortnavn
-  miljo               = var.miljo
-  resource_group_name = local.network.resource_group_name
-  location            = var.location
-  subnet_id           = local.network.subnet_ids[each.key]
-  sku                 = var.webapp_sku
-  tags                = local.tags
+removed {
+  from = module.webapp
+  lifecycle {
+    destroy = false
+  }
 }

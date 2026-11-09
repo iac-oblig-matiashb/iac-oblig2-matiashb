@@ -1,15 +1,5 @@
-# Midlertidig nettverksstack under migrering.
-# Ressursgruppen og VNet-et flyttes til shared-network. Denne stacken beholder
-# subnettene (og de gamle outputene) til de flyttes i neste PR.
-
-locals {
-  tags = {
-    eier  = var.kortnavn
-    miljo = var.miljo
-    kurs  = "dcst3005-oblig2"
-  }
-}
-
+# Overgangsstack: nettverkseierskap flyttes til shared-network og service.
+# network.tfstate beholder outputs til de gamle app/data-stackene er fjernet.
 data "azurerm_resource_group" "existing" {
   name = "rg-${var.kortnavn}-oblig2-${var.miljo}"
 }
@@ -19,6 +9,14 @@ data "azurerm_virtual_network" "existing" {
   resource_group_name = data.azurerm_resource_group.existing.name
 }
 
+data "azurerm_subnet" "existing" {
+  for_each             = var.tjenester
+  name                 = "snet-${each.key}"
+  resource_group_name  = data.azurerm_resource_group.existing.name
+  virtual_network_name = data.azurerm_virtual_network.existing.name
+}
+
+# PR 1: disse to er allerede overført til shared-network.
 removed {
   from = azurerm_resource_group.this
   lifecycle {
@@ -33,16 +31,10 @@ removed {
   }
 }
 
-module "subnet" {
-  source   = "../../modules/subnet"
-  for_each = var.tjenester
-
-  service             = each.key
-  resource_group_name = data.azurerm_resource_group.existing.name
-  location            = data.azurerm_resource_group.existing.location
-  vnet_name           = data.azurerm_virtual_network.existing.name
-  prefix              = each.value.prefix
-  delegate_web        = each.value.runtime == "webapp"
-  allow_http_from     = var.allow_http_from
-  tags                = local.tags
+# PR 2: åtte ressurser (4 per tjeneste) overføres til service.
+removed {
+  from = module.subnet
+  lifecycle {
+    destroy = false
+  }
 }
