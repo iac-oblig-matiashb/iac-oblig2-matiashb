@@ -1,9 +1,9 @@
 output "vm_public_ips" {
-  description = "Offentlig IP per VM-tjeneste. Åpne http://<ip> for å se boot-id-en."
-  value       = { for navn, v in module.vm : navn => v.public_ip }
+  description = "Offentlig IP per VM-tjeneste, lest fra eksisterende Azure-ressurser."
+  value       = { for navn, ip in data.azurerm_public_ip.vm : navn => ip.ip_address }
 }
 
 output "webapp_hostnames" {
-  description = "Adresse per web app-tjeneste."
-  value       = { for navn, w in module.webapp : navn => w.hostname }
+  description = "Adresse per webapp-tjeneste."
+  value       = { for navn, runtime in var.tjenester : navn => "app-${var.kortnavn}-${navn}-${var.miljo}.azurewebsites.net" if runtime == "webapp" }
 }

@@ -1,4 +1,5 @@
-# Beholdes under overgangen: data/app leser fortsatt network.tfstate.
+# Outputene må beholdes så app-stacken kan lese gammel network.tfstate
+# i overgangsperioden fram til alle eierskap er flyttet.
 output "resource_group_name" {
   description = "Ressursgruppen til alle stackene."
   value       = data.azurerm_resource_group.existing.name
@@ -15,6 +16,6 @@ output "vnet_name" {
 }
 
 output "subnet_ids" {
-  description = "Subnett-ID per tjeneste."
-  value       = { for navn, s in module.subnet : navn => s.subnet_id }
+  description = "Subnett-ID per tjeneste, lest fra Azure etter at eierskapet er gitt fra seg."
+  value       = { for navn, s in data.azurerm_subnet.existing : navn => s.id }
 }
