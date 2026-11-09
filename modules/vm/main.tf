@@ -28,6 +28,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   location              = var.location
   size                  = var.size
   admin_username        = "azureuser"
+  disable_password_authentication = true
   network_interface_ids = [azurerm_network_interface.this.id]
 
   # Ingen VM-utvidelser. Alt oppsett skjer med cloud-init under.
