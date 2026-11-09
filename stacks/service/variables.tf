@@ -74,7 +74,6 @@ variable "vm_size" {
 variable "ssh_public_key" {
   description = "Offentlig SSH-nøkkel når runtime er vm. Aldri legg inn privat nøkkel."
   type        = string
-  default     = ""
 }
 
 variable "webapp_sku" {
