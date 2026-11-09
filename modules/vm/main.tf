@@ -23,13 +23,13 @@ resource "azurerm_network_interface" "this" {
 }
 
 resource "azurerm_linux_virtual_machine" "this" {
-  name                  = "vm-${var.service}"
-  resource_group_name   = var.resource_group_name
-  location              = var.location
-  size                  = var.size
-  admin_username        = "azureuser"
+  name                            = "vm-${var.service}"
+  resource_group_name             = var.resource_group_name
+  location                        = var.location
+  size                            = var.size
+  admin_username                  = "azureuser"
   disable_password_authentication = true
-  network_interface_ids = [azurerm_network_interface.this.id]
+  network_interface_ids           = [azurerm_network_interface.this.id]
 
   # Ingen VM-utvidelser. Alt oppsett skjer med cloud-init under.
   allow_extension_operations = false
