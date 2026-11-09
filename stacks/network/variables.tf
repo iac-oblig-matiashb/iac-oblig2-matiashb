@@ -8,11 +8,6 @@ variable "kortnavn" {
   }
 }
 
-variable "location" {
-  description = "Azure-regionen. Settes i config/felles.tfvars."
-  type        = string
-}
-
 variable "miljo" {
   description = "Miljøet. Settes av scripts/kjor.sh (TF_VAR_miljo), ikke i en .tfvars-fil."
   type        = string
