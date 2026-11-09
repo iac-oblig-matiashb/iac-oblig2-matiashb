@@ -1,16 +1,17 @@
+# Beholdes under overgangen: data/app leser fortsatt network.tfstate.
 output "resource_group_name" {
-  description = "Ressursgruppa alle stackene bruker."
-  value       = azurerm_resource_group.this.name
+  description = "Ressursgruppen til alle stackene."
+  value       = data.azurerm_resource_group.existing.name
 }
 
 output "location" {
-  description = "Regionen alt står i."
-  value       = azurerm_resource_group.this.location
+  description = "Regionen til ressursgruppen."
+  value       = data.azurerm_resource_group.existing.location
 }
 
 output "vnet_name" {
-  description = "Navnet på VNet-et."
-  value       = module.vnet.name
+  description = "Navnet til eksisterende VNet."
+  value       = data.azurerm_virtual_network.existing.name
 }
 
 output "subnet_ids" {
