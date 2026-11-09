@@ -11,9 +11,6 @@ data "terraform_remote_state" "shared_network" {
   }
 }
 
-data "azurerm_resource_group" "existing" {
-  name = data.terraform_remote_state.shared_network.outputs.resource_group_name
-}
 
 data "azurerm_client_config" "current" {}
 
