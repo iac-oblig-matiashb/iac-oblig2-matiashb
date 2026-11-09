@@ -7,12 +7,6 @@ locals {
   }
 }
 
-# Azure-data brukes til import-ID-er, ikke til å opprette nye ressurser.
-data "azurerm_resource_group" "existing" {
-  name = "rg-${var.kortnavn}-oblig2-${var.miljo}"
-}
-
-
 resource "azurerm_resource_group" "this" {
   name     = "rg-${var.kortnavn}-oblig2-${var.miljo}"
   location = var.location
